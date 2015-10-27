@@ -1,0 +1,55 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.sayor.org.cutmypie.activities.DetailsActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:id="@+id/ivPhoto"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:text="New Text"
+        android:id="@+id/tvDesc"
+        android:layout_marginBottom="30dp"
+        android:layout_above="@+id/tvCap"
+        android:layout_alignStart="@+id/ivPhoto"
+        android:layout_alignEnd="@+id/ivPhoto" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Contact"
+        android:id="@+id/btContact"
+        android:onClick="onContact"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/tvCap"
+        android:layout_above="@+id/tvExpr"
+        android:layout_alignStart="@+id/tvDesc"
+        android:layout_marginBottom="30dp"
+        android:layout_alignEnd="@+id/tvDesc" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/tvExpr"
+        android:layout_marginBottom="30dp"
+        android:layout_above="@+id/btContact"
+        android:layout_alignStart="@+id/tvCap"
+        android:layout_alignEnd="@+id/tvCap" />
+</RelativeLayout>

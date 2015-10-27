@@ -1,0 +1,87 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="com.sayor.org.cutmypie.activities.PostActivity"
+    android:paddingEnd="20dp"
+    android:paddingStart="20dp">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="Can you provide some pictures of the food?"
+        android:id="@+id/tvPhoto"
+        android:layout_marginTop="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:paddingEnd="20dp"
+        android:paddingStart="20dp" />
+
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="Can you give some description about the food?"
+        android:id="@+id/tvFoodDesc"
+        android:layout_marginTop="40dp"
+        android:layout_below="@+id/tvPhoto"
+        android:layout_alignStart="@+id/tvPhoto"
+        android:paddingEnd="20dp"
+        android:paddingStart="20dp" />
+
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="How many people it can feed?"
+        android:id="@+id/tvCap"
+        android:layout_marginTop="40dp"
+        android:layout_below="@+id/tvFoodDesc"
+        android:layout_alignStart="@+id/tvFoodDesc"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp" />
+
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="How long will it hold before spoiling?"
+        android:id="@+id/tvExp"
+        android:layout_below="@+id/tvCap"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="40dp"
+        android:paddingEnd="20dp"
+        android:paddingStart="20dp" />
+
+    <EditText
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/etFoodDesc"
+        android:layout_alignTop="@+id/tvFoodDesc"
+        android:layout_toEndOf="@+id/tvFoodDesc" />
+
+    <EditText
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/etFeedCap"
+        android:paddingStart="40dp"
+        android:layout_alignTop="@+id/tvCap"
+        android:layout_toEndOf="@+id/tvCap" />
+
+    <EditText
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/etExp"
+        android:paddingStart="40dp"
+        android:layout_alignTop="@+id/tvExp"
+        android:layout_toEndOf="@+id/tvExp" />
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/ivPhoto"
+        android:layout_above="@+id/tvFoodDesc"
+        android:layout_toEndOf="@+id/tvPhoto" />
+
+</RelativeLayout>
