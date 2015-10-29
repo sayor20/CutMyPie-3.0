@@ -22,7 +22,7 @@
         android:background="@drawable/button_background"
         android:layout_above="@+id/btLogin"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="35dp"
+        android:layout_marginBottom="80dp"
         android:gravity="center_vertical|center_horizontal"
         android:focusable="true"
         android:id="@+id/llLogin"

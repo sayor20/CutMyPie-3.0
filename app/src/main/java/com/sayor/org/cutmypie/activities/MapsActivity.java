@@ -9,11 +9,13 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.BounceInterpolator;
 
 import com.activeandroid.query.Select;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -44,6 +46,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private FoodData foodData;
     byte[] bytes;
     Location currentLocation;
+    Marker marker;
     ProgressDialog progressDialog;
 
     private Toolbar mToolbar;
@@ -55,15 +58,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
         progressDialog = new ProgressDialog(this);
-        progressDialog.setTitle("Fetching data");
+        progressDialog.setTitle("Fetching map data");
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
         progressDialog.setIndeterminate(true);
         progressDialog.show();
+
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -73,6 +76,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.fragment);
         mapFragment.getMapAsync(this);
+
+        //SystemClock.sleep(5000);
     }
 
     @Override
@@ -116,6 +121,36 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return super.onOptionsItemSelected(item);
     }
 
+    private void dropPinEffect(final Marker marker) {
+        // Handler allows us to repeat a code block after a specified delay
+        final android.os.Handler handler = new android.os.Handler();
+        final long start = SystemClock.uptimeMillis();
+        final long duration = 1500;
+
+        // Use the bounce interpolator
+        final android.view.animation.Interpolator interpolator =
+                new BounceInterpolator();
+
+        // Animate marker with a bounce updating its position every 15ms
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                // Calculate t for bounce based on elapsed time
+                float t = Math.max(
+                        1 - interpolator.getInterpolation((float) elapsed
+                                / duration), 0);
+                // Set the anchor
+                marker.setAnchor(0.5f, 1.0f + 14 * t);
+
+                if (t > 0.0) {
+                    // Post this event again 15ms from now.
+                    handler.postDelayed(this, 15);
+                }
+            }
+        });
+    }
+
     @Override
     public void onMapReady(final GoogleMap googleMap) {
 
@@ -141,12 +176,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 public void done(List<ParseObject> list, ParseException e) {
                     if (e == null) {
                         for (ParseObject parseObject : list) {
-                            googleMap.addMarker(new MarkerOptions()
+                            marker = googleMap.addMarker(new MarkerOptions()
                                     .position(new LatLng(parseObject.getDouble("lat"), parseObject.getDouble("lon")))
                                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_marker))
                                     .title(parseObject.getString("fooddesc"))
-                                    .anchor(0.0f, 1.0f)
                                     .snippet(parseObject.getString("ownername")));
+                            //googleMap.setInfoWindowAdapter(new CustomInfoAdapter(getLayoutInflater(), parseObject.getBytes("photo")));
+                            dropPinEffect(marker);
                             googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                                 @Override
                                 public void onInfoWindowClick(Marker marker) {
@@ -168,6 +204,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 foodData.save();
                             }
                         }
+                        progressDialog.dismiss();
                     } else {
                         Log.d("item", "Error:" + e.getMessage());
                     }
@@ -182,6 +219,5 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             .title(foodData.getFooddesc()));
                 }
         }
-        progressDialog.dismiss();
     }
 }

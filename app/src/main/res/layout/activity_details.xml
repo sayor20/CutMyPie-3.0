@@ -11,8 +11,8 @@
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:id="@+id/ivPhoto"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/toolbar" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,6 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Contact"
+        android:background="@drawable/button_background"
         android:id="@+id/btContact"
         android:onClick="onContact"
         android:layout_alignParentBottom="true"

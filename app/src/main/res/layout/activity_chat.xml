@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
     tools:context="${relativePackage}.${activityClass}" >
 
     <include
@@ -13,8 +14,9 @@
         android:transcriptMode="alwaysScroll"
         android:layout_width="match_parent"
         android:layout_height="480dp"
-        android:layout_above="@+id/etMessage"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/toolbar"
+        android:layout_above="@+id/etMessage" />
     <EditText
         android:id="@+id/etMessage"
         android:layout_width="match_parent"
@@ -29,20 +31,13 @@
         android:id="@+id/btSend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical|right"
+        android:gravity="center_vertical|center_horizontal"
         android:text="@string/send"
+        android:background="@drawable/button_background"
         android:textSize="18sp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:textAlignment="center">
     </Button>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/tvChatTitle"
-        android:layout_above="@+id/lvChat"
-        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

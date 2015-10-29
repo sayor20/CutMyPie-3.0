@@ -1,7 +1,9 @@
 package com.sayor.org.cutmypie.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -11,7 +13,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -19,9 +20,9 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-import com.sayor.org.cutmypie.models.Message;
 import com.sayor.org.cutmypie.R;
 import com.sayor.org.cutmypie.adapters.ChatListAdapter;
+import com.sayor.org.cutmypie.models.Message;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +35,9 @@ public class ChatActivity extends ActionBarActivity {
     private ArrayList<Message> mMessages, mBuffer;
     private boolean mFirstLoad;
     private String rid,rname,sUserId;
-    private TextView tvChatTitle;
     private static final int MAX_CHAT_MESSAGES_TO_SHOW = 25;
+    private ProgressDialog progressDialog;
+    private Handler handler;
 
     private Toolbar mToolbar;
 
@@ -54,20 +56,28 @@ public class ChatActivity extends ActionBarActivity {
         rname = i.getStringExtra("receiverName");
 
         lvChat = (ListView)findViewById(R.id.lvChat);
-        tvChatTitle = (TextView) findViewById(R.id.tvChatTitle);
         etMessage = (EditText)findViewById(R.id.etMessage);
         btSend = (Button)findViewById(R.id.btSend);
 
-        tvChatTitle.setText(rname);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Fetching chats");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+
+        getSupportActionBar().setTitle(rname+" chats");
         mFirstLoad = true;
         sUserId = ParseUser.getCurrentUser().getObjectId();
         mMessages = new ArrayList<Message>();
         mBuffer = new ArrayList<Message>();
         aChatList = new ChatListAdapter(this,sUserId,mMessages);
+        handler = new Handler();
         lvChat.setTranscriptMode(1);
         lvChat.setAdapter(aChatList);
         setupMessagePosting();
 
+        //SystemClock.sleep(3000);
         // Run the runnable object defined every 100ms
         //handler.postDelayed(runnable, 100);
 
@@ -75,7 +85,7 @@ public class ChatActivity extends ActionBarActivity {
 
     // Setup message field and posting
     private void setupMessagePosting() {
-        refreshMessages();
+        receiveMessage();
         btSend.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -119,6 +129,32 @@ public class ChatActivity extends ActionBarActivity {
             public void done(List<Message> messages, ParseException e) {
                 if (e == null) {
                     mBuffer.addAll(messages);
+                    ParseQuery<Message> query2 = ParseQuery.getQuery(Message.class);
+                    // Configure limit and sort order
+                    query2.setLimit(MAX_CHAT_MESSAGES_TO_SHOW);
+                    query2.whereEqualTo("userId", rid);
+                    //query.whereEqualTo("userId", rid);
+                    query2.whereEqualTo("ReceiverId", sUserId);
+                    query2.orderByAscending("createdAt");
+                    // Execute query to fetch all messages from Parse asynchronously
+                    // This is equivalent to a SELECT query with SQL
+                    query2.findInBackground(new FindCallback<Message>() {
+                        public void done(List<Message> messages, ParseException e) {
+                            if (e == null) {
+                                mBuffer.addAll(messages);
+                                aChatList.addAll(mBuffer);
+                                //aChatList.notifyDataSetChanged(); // update adapter
+                                progressDialog.dismiss();
+                                // Scroll to the bottom of the list on initial load
+                                if (mFirstLoad) {
+                                    lvChat.setSelection(aChatList.getCount() - 1);
+                                    mFirstLoad = false;
+                                }
+                            } else {
+                                Log.d("message", "Error: " + e.getMessage());
+                            }
+                        }
+                    });
 
                 } else {
                     Log.d("message", "Error: " + e.getMessage());
@@ -126,44 +162,16 @@ public class ChatActivity extends ActionBarActivity {
             }
         });
 
-        ParseQuery<Message> query2 = ParseQuery.getQuery(Message.class);
-        // Configure limit and sort order
-        query2.setLimit(MAX_CHAT_MESSAGES_TO_SHOW);
-        query2.whereEqualTo("userId", rid);
-        //query.whereEqualTo("userId", rid);
-        query2.whereEqualTo("ReceiverId", sUserId);
-        query2.orderByAscending("createdAt");
-        // Execute query to fetch all messages from Parse asynchronously
-        // This is equivalent to a SELECT query with SQL
-        query2.findInBackground(new FindCallback<Message>() {
-            public void done(List<Message> messages, ParseException e) {
-                if (e == null) {
-                    mBuffer.addAll(messages);
-                    aChatList.addAll(mBuffer);
-                    aChatList.notifyDataSetChanged(); // update adapter
-                    // Scroll to the bottom of the list on initial load
-                    if (mFirstLoad) {
-                        lvChat.setSelection(aChatList.getCount() - 1);
-                        mFirstLoad = false;
-                    }
-                } else {
-                    Log.d("message", "Error: " + e.getMessage());
-                }
-            }
-        });
+
     }
 
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            refreshMessages();
+            receiveMessage();
        //     handler.postDelayed(this, 100);
         }
     };
-
-    private void refreshMessages() {
-        receiveMessage();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

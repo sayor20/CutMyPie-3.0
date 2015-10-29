@@ -20,7 +20,7 @@ public class Message extends ParseObject {
     }
 
     public String getReceiverName() {
-        return getString("receiverName");
+        return getString("ReceiverName");
     }
 
     public String getBody() {

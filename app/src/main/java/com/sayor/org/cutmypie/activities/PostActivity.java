@@ -43,6 +43,7 @@ public class PostActivity extends ActionBarActivity {
     ParseFile photoFile;
     ByteArrayOutputStream buffer;
     Location location;
+    MenuItem m;
     ProgressDialog progressDialog;
 
     private String photoFileName ="foodimg.jpg";
@@ -81,7 +82,6 @@ public class PostActivity extends ActionBarActivity {
         String bestProvider = locationManager.getBestProvider(criteria, false);
         location = locationManager.getLastKnownLocation(bestProvider);
         if(location !=null){
-            MenuItem m= (MenuItem)findViewById(R.id.action_post);
             m.setIcon(R.drawable.ic_got_location);
         }else{
             Toast.makeText(this, "error in getting data", Toast.LENGTH_SHORT).show();
@@ -177,6 +177,7 @@ public class PostActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_post, menu);
+        m = menu.findItem(R.id.action_location);
         return true;
     }
 
