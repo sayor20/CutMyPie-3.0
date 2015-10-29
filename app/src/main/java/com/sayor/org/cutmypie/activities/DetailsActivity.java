@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.activeandroid.query.Select;
+import com.parse.ParseUser;
 import com.sayor.org.cutmypie.models.FoodData;
 import com.sayor.org.cutmypie.R;
 
@@ -75,6 +76,13 @@ public class DetailsActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        if (id == R.id.action_logout) {
+            Intent i = new Intent(this, LoginActivity.class);
+            ParseUser.logOut();
+            startActivity(i);
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }

@@ -6,6 +6,8 @@
         android:title="@string/title_location" android:orderInCategory="100" app:showAsAction="always" />
     <item android:id="@+id/action_photo" android:icon= "@drawable/ic_camera"
         android:title="@string/title_camera" android:orderInCategory="100" app:showAsAction="always" />
-    <item android:id="@+id/action_post" android:title="@string/action_post"
+    <item android:id="@+id/action_post" android:title="@string/action_post" android:icon="@drawable/ic_submit"
         android:orderInCategory="100" app:showAsAction="always" />
+    <item android:id="@+id/action_logout" android:title="@string/action_logout"
+        android:orderInCategory="100" app:showAsAction="collapseActionView" />
 </menu>

@@ -147,6 +147,13 @@ public class ConversationActivity extends ActionBarActivity {
             return true;
         }
 
+        if (id == R.id.action_logout) {
+            Intent i = new Intent(this, LoginActivity.class);
+            ParseUser.logOut();
+            startActivity(i);
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 }

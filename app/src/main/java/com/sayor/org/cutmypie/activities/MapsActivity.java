@@ -10,12 +10,20 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.BounceInterpolator;
+import android.widget.TextView;
 
 import com.activeandroid.query.Select;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -39,7 +47,7 @@ import com.sayor.org.cutmypie.models.FoodData;
 import java.util.List;
 
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback{
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener{
 
     private ConnectivityManager cm;
     private NetworkInfo ni;
@@ -48,6 +56,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     Location currentLocation;
     Marker marker;
     ProgressDialog progressDialog;
+    TextView textView1, textView2;
 
     private Toolbar mToolbar;
 
@@ -57,6 +66,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        textView1 = (TextView)findViewById(R.id.textView1);
+        textView2 = (TextView)findViewById(R.id.textView2);
+
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Fetching map data");
@@ -74,6 +86,38 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         onBackPressed();
 
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        drawer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                textView1.setText(ParseUser.getCurrentUser().getUsername());
+                textView2.setText(ParseUser.getCurrentUser().getEmail());
+            }
+        });
+        toggle.syncState();
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Proceed to post leftovers", Snackbar.LENGTH_LONG)
+                        .setAction("Ok", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent i = new Intent(MapsActivity.this, PostActivity.class);
+                                startActivity(i);
+                            }
+                        }).show();
+            }
+        });
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.fragment);
         mapFragment.getMapAsync(this);
 
@@ -89,7 +133,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onBackPressed() {
-        // do nothing.
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+
+        }
     }
 
     @Override
@@ -101,19 +150,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (id == R.id.action_post) {
             Intent i = new Intent(this, PostActivity.class);
-            startActivity(i);
-            return true;
-        }
-
-        if (id == R.id.action_conversation) {
-            Intent i = new Intent(this, ConversationActivity.class);
-            startActivity(i);
-            return true;
-        }
-
-        if (id == R.id.action_logout) {
-            Intent i = new Intent(this, LoginActivity.class);
-            ParseUser.logOut();
             startActivity(i);
             return true;
         }
@@ -158,8 +194,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         googleMap.setMyLocationEnabled(true);
         googleMap.getUiSettings().setCompassEnabled(true);
-        googleMap.getUiSettings().setMapToolbarEnabled(true);
-        googleMap.getUiSettings().setZoomControlsEnabled(true);
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
@@ -200,7 +234,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             FoodData foodData = new Select().from(FoodData.class).where("fooddesc=?",parseObject.getString("fooddesc")).executeSingle();
 
                             if(foodData==null) {
-                                foodData = new FoodData(parseObject.getString("fooddesc"), parseObject.getString("foodcap"), parseObject.getString("timeexp"), parseObject.getDouble("lat"), parseObject.getDouble("lon"), bytes, parseObject.getString("ownerid"), parseObject.getString("ownername"));
+                                foodData = new FoodData(parseObject.getString("fooddesc"), parseObject.getString("feedcap"), parseObject.getString("timeexp"), parseObject.getDouble("lat"), parseObject.getDouble("lon"), bytes, parseObject.getString("ownerid"), parseObject.getString("ownername"));
                                 foodData.save();
                             }
                         }
@@ -219,5 +253,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             .title(foodData.getFooddesc()));
                 }
         }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_conv) {
+            Intent i = new Intent(this, ConversationActivity.class);
+            startActivity(i);
+        }
+        if (id == R.id.nav_logout) {
+            Intent i = new Intent(this, LoginActivity.class);
+            ParseUser.logOut();
+            startActivity(i);
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
